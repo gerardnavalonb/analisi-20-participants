@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anàlisi Estadística per a 20 Participants — Bloc 1 i Bloc 2</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --primary-dark: #3730a3;
+      --alta-color: #2563eb;
+      --alta-bg: #eff6ff;
+      --alta-border: #93c5fd;
+      --baixa-color: #d97706;
+      --baixa-bg: #fffbeb;
+      --baixa-border: #fcd34d;
+      --success: #10b981;
+      --success-bg: #ecfdf5;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --border-card: #e2e8f0;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 0;
+      margin: 0;
+    }
+
+    .app-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 20px 80px;
+    }
+
+    /* Capçalera Hero */
+    .header-hero {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+      color: #ffffff;
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .header-hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; }
+    .header-hero p { color: #c7d2fe; font-size: 0.95rem; max-width: 650px; }
+    .badge-20 {
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 16px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-excel { background-color: #047857; color: #fff; }
+    .btn-excel:hover { background-color: #065f46; }
+    .btn-pdf { background-color: #b91c1c; color: #fff; }
+    .btn-pdf:hover { background-color: #991b1b; }
+    .btn-outline { background: #fff; color: var(--text-main); border-color: var(--border-card); }
+    .btn-outline:hover { background: #f1f5f9; }
+    .btn-danger-outline { background: transparent; color: var(--danger); border-color: #fecaca; }
+    .btn-danger-outline:hover { background: var(--danger-bg); }
+
+    /* Barra de Progrés */
+    .status-bar-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-card);
+      box-shadow: var(--shadow-sm);
+      padding: 18px 22px;
+      margin-bottom: 24px;
+    }
+    .status-bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .status-title { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .count-pill { padding: 4px 12px; border-radius: 9999px; font-weight: 700; font-size: 0.85rem; }
+    .count-pill.warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .count-pill.success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .progress-track { width: 100%; height: 12px; background: #e2e8f0; border-radius: 9999px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%); width: 0%; transition: width 0.25s ease; border-radius: 9999px; }
+
+    /* Layout Principal */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 1080px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Columna Esquerra: Dades (Llista completa dels 20 participants sense barres de desplaçament) */
+    .data-panel {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-card);
+      box-shadow: var(--shadow-sm);
+      padding: 22px;
+    }
+
+    .panel-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; }
+    .table-helper-text { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px; }
+
+    /* Noms dels blocs */
+    .block-names-box {
+      background: #f8fafc;
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .block-name-input-group label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .block-name-input-group input {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-main);
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-sm);
+      outline: none;
+    }
+    .block-name-input-group input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    /* Taula dels 20 participants oberta completament sense scroll intern */
+    .table-scroll-area {
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      margin-bottom: 14px;
+      overflow: visible;
+    }
+    .participants-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+    .participants-table th {
+      background: #f8fafc;
+      color: var(--text-muted);
+      font-weight: 700;
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--border-card);
+    }
+    .participants-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+    .participants-table tr:nth-child(even) { background: #fafbfc; }
+    .participants-table tr:hover { background: #f1f5f9; }
+
+    .participant-label {
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.86rem;
+    }
+    .row-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .row-status-dot.complete { background: var(--success); }
+    .row-status-dot.partial { background: var(--warning); }
+
+    /* Botons ALTA / BAIXA */
+    .toggle-group {
+      display: inline-flex;
+      background: #e2e8f0;
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      gap: 3px;
+    }
+    .toggle-btn {
+      border: 1px solid transparent;
+      background: #f8fafc;
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #64748b;
+      transition: all 0.12s ease;
+      user-select: none;
+    }
+    .toggle-btn:hover { background: #ffffff; color: #1e293b; }
+    
+    /* Estil actiu ALTA (Blau ferm) */
+    .toggle-btn.active-alta {
+      background: #2563eb !important;
+      color: #ffffff !important;
+      border-color: #1d4ed8 !important;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.4) !important;
+    }
+    
+    /* Estil actiu BAIXA (Carbassa ferm) */
+    .toggle-btn.active-baixa {
+      background: #d97706 !important;
+      color: #ffffff !important;
+      border-color: #b45309 !important;
+      box-shadow: 0 2px 4px rgba(217, 119, 6, 0.4) !important;
+    }
+
+    .table-quick-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* Columna Dreta: Resultats */
+    .results-panel { display: flex; flex-direction: column; gap: 24px; }
+    .locked-results-card {
+      background: #ffffff;
+      border: 2px dashed #cbd5e1;
+      border-radius: var(--radius-lg);
+      padding: 60px 40px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .locked-icon { font-size: 3rem; margin-bottom: 14px; }
+    .locked-title { font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+    .locked-desc { font-size: 0.95rem; max-width: 520px; margin: 0 auto 18px; line-height: 1.6; }
+    .locked-pill {
+      display: inline-block;
+      background: #fef3c7;
+      color: #b45309;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-size: 0.92rem;
+      border: 1px solid #fde68a;
+    }
+
+    .results-active-wrapper { display: flex; flex-direction: column; gap: 24px; }
+    .card-section {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-card);
+      box-shadow: var(--shadow-sm);
+      padding: 22px;
+    }
+    .card-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .card-section-title { font-size: 1.15rem; font-weight: 800; color: var(--text-main); }
+    .tag-badge {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      background: var(--primary-light);
+      color: var(--primary);
+      text-transform: uppercase;
+    }
+
+    /* Percentatges generals */
+    .general-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .general-stats-grid { grid-template-columns: 1fr; } }
+    .stat-block-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-md); padding: 16px; }
+    .stat-block-title { font-weight: 800; font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 12px; display: flex; justify-content: space-between; }
+    .stat-row-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; }
+    .stat-row-item:last-child { border-bottom: none; }
+    .pill-alta { background: var(--alta-bg); color: var(--alta-color); border: 1px solid var(--alta-border); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; }
+    .pill-baixa { background: var(--baixa-bg); color: var(--baixa-color); border: 1px solid var(--baixa-border); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; }
+    .stat-percentage-badge { font-weight: 800; font-size: 1.05rem; margin-left: 8px; }
+
+    /* Taula creuada 2x2 */
+    .contingency-table-wrapper { overflow-x: auto; margin-bottom: 14px; }
+    .contingency-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.9rem; }
+    .contingency-table th, .contingency-table td { border: 1px solid #cbd5e1; padding: 12px 14px; }
+    .contingency-table th { background: #f1f5f9; font-weight: 700; color: #334155; }
+    .contingency-table .corner-header { background: #e2e8f0; font-size: 0.82rem; font-weight: 800; }
+    .contingency-table .row-header { background: #f8fafc; font-weight: 700; text-align: left; }
+    .cell-obs { font-size: 1.3rem; font-weight: 800; color: var(--text-main); }
+    .cell-row-pct { font-size: 0.85rem; font-weight: 700; color: var(--primary); margin-top: 2px; }
+    .cell-total-pct { font-size: 0.75rem; color: var(--text-muted); }
+    .cell-exp { font-size: 0.75rem; color: #64748b; font-style: italic; margin-top: 3px; }
+    .contingency-table .total-cell { background: #f8fafc; font-weight: 700; }
+    .contingency-note { font-size: 0.83rem; color: var(--text-muted); background: #f8fafc; border-left: 3px solid var(--primary); padding: 8px 12px; }
+
+    /* Mètriques estadístiques */
+    .stats-cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .metric-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-md); padding: 16px; }
+    .metric-card.highlight { border-color: #c7d2fe; background: #f5f3ff; }
+    .metric-name { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    .metric-value { font-size: 1.6rem; font-weight: 800; line-height: 1.2; }
+    /* Estils per als gràfics fàcils d'interpretar */
+    .easy-charts-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .easy-chart-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+    }
+    .easy-chart-title {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .easy-chart-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: -10px;
+      margin-bottom: 14px;
+    }
+    .segmented-bar-block {
+      margin-bottom: 14px;
+    }
+    .segmented-bar-block:last-child {
+      margin-bottom: 0;
+    }
+    .segmented-bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.86rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .segmented-bar-track {
+      display: flex;
+      height: 32px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #e2e8f0;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+    }
+    .seg-alta {
+      background: #2563eb;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      font-weight: 800;
+      transition: width 0.3s ease;
+      overflow: hidden;
+      white-space: nowrap;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .seg-baixa {
+      background: #d97706;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      font-weight: 800;
+      transition: width 0.3s ease;
+      overflow: hidden;
+      white-space: nowrap;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .two-groups-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 680px) {
+      .two-groups-grid { grid-template-columns: 1fr; }
+    }
+    .group-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .group-card-header {
+      font-weight: 800;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+    }
+    .profiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .profile-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      text-align: center;
+    }
+    .profile-card-count {
+      font-size: 1.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 2px;
+    }
+    .profile-card-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .mosaic-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legend-box {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+    }
+    .mosaic-participants-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 6px;
+      margin: 12px 0 6px;
+    }
+    @media (max-width: 600px) {
+      .mosaic-participants-grid { grid-template-columns: repeat(5, 1fr); }
+    }
+    .mosaic-node {
+      padding: 8px 4px;
+      border-radius: 6px;
+      text-align: center;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 0.75rem;
+      transition: transform 0.15s ease;
+      cursor: default;
+    }
+    .mosaic-node:hover {
+      transform: scale(1.08);
+    }
+
+    .toast-msg {
+      position: fixed; bottom: 24px; right: 24px; background: #1e293b; color: #fff; padding: 10px 18px;
+      border-radius: var(--radius-md); font-size: 0.88rem; font-weight: 600; box-shadow: var(--shadow-lg);
+      opacity: 0; transform: translateY(10px); transition: all 0.25s ease; pointer-events: none; z-index: 9999;
+    }
+    .toast-msg.show { opacity: 1; transform: translateY(0); }
+
+    /* Print / PDF */
+    @media print {
+      body { background: #fff !important; font-size: 10.5pt !important; }
+      .header-actions, .status-bar-card, .data-panel, .table-quick-actions, .copy-btn, .btn { display: none !important; }
+      .app-container { padding: 0 !important; max-width: 100% !important; }
+      .main-grid { display: block !important; }
+      .card-section { border: 1px solid #ddd !important; box-shadow: none !important; margin-bottom: 16px !important; page-break-inside: avoid; }
+      .charts-grid { grid-template-columns: 1fr 1fr !important; }
+      .header-hero { background: #1e1b4b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 16px 20px !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Capçalera Principal -->
+    <header class="header-hero">
+      <div>
+        <span class="badge-20">🎯 Mostra fixa de 20 participants</span>
+        <h1>Anàlisi Estadística de 2 Blocs</h1>
+        <p>Introducció de dades (ALTA / BAIXA) · Taula creuada 2×2 · Coeficient Phi · Prova Exacta de Fisher · Khi-quadrat · Exportació.</p>
+      </div>
+      <div class="header-actions">
+        <button id="btn-export-excel" class="btn btn-excel" onclick="exportToExcel()">📊 Exportar a Excel</button>
+        <button id="btn-export-pdf" class="btn btn-pdf" onclick="window.print()">📄 Exportar a PDF</button>
+      </div>
+    </header>
+
+    <!-- Barra de Progrés i Estat d'Emplenament -->
+    <section class="status-bar-card">
+      <div class="status-bar-header">
+        <div class="status-title">
+          <span>Estat d'emplenament de la mostra:</span>
+          <span id="status-summary-pill" class="count-pill warning">Falten 20 participants (40 puntuacions)</span>
+        </div>
+        <div style="display: flex; gap: 16px; font-size: 0.9rem;">
+          <div>Participants completats: <strong id="completed-participants-count">0</strong> / 20</div>
+          <div>Falten per completar: <strong id="missing-participants-count" style="color: var(--baixa-color);">20</strong></div>
+          <div>Puntuacions pendents: <strong id="missing-scores-count">40</strong> / 40</div>
+        </div>
+      </div>
+      <div class="progress-track">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </section>
+
+    <!-- Graella Principal: Taula de Participants (Esquerra) + Resultats (Dreta) -->
+    <main class="main-grid">
+
+      <!-- COLUMNA ESQUERRA: TAULA FIXA DE 20 PARTICIPANTS -->
+      <section class="data-panel">
+        <h2 class="panel-title">Taula de Dades (20 Participants)</h2>
+        <p class="table-helper-text">
+          👉 <strong>Feu clic sobre ALTA o BAIXA</strong> per a cadascun dels dos blocs. No es permet afegir ni treure files.
+        </p>
+
+        <!-- Configuració dels noms personalitzats dels blocs -->
+        <div class="block-names-box">
+          <div class="block-name-input-group">
+            <label for="input-bloc1-name">✏️ Nom del Bloc 1 (Variable 1):</label>
+            <input type="text" id="input-bloc1-name" value="BLOC 1" maxlength="40" oninput="updateBlockNamesFromInput()" placeholder="Ex: Autoestima, Hores de son...">
+          </div>
+          <div class="block-name-input-group">
+            <label for="input-bloc2-name">✏️ Nom del Bloc 2 (Variable 2):</label>
+            <input type="text" id="input-bloc2-name" value="BLOC 2" maxlength="40" oninput="updateBlockNamesFromInput()" placeholder="Ex: Rendiment, Ansietat...">
+          </div>
+        </div>
+
+        <div class="table-scroll-area">
+          <table class="participants-table">
+            <thead>
+              <tr>
+                <th style="width: 36%;">Participant</th>
+                <th style="width: 32%;" id="th-bloc1-header">BLOC 1</th>
+                <th style="width: 32%;" id="th-bloc2-header">BLOC 2</th>
+              </tr>
+            </thead>
+            <tbody id="participants-tbody">
+              <!-- Renderitzat automàticament per JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-quick-actions">
+          <button class="btn btn-outline" style="font-size: 0.78rem; padding: 6px 10px;" onclick="loadSampleData('alta_associacio')">⚡ Exemple: Alta Associació</button>
+          <button class="btn btn-outline" style="font-size: 0.78rem; padding: 6px 10px;" onclick="loadSampleData('independencia')">⚡ Exemple: Independència</button>
+          <button class="btn btn-danger-outline" style="font-size: 0.78rem; padding: 6px 10px;" onclick="resetAllData()">🗑️ Reiniciar</button>
+        </div>
+      </section>
+
+      <!-- COLUMNA DRETA: RESULTATS I ANÀLISI ESTADÍSTICA -->
+      <section class="results-panel">
+
+        <!-- ESTAT BLOQUEJAT (Quan falten dades) -->
+        <div id="locked-results-card" class="locked-results-card">
+          <div class="locked-icon">🔒</div>
+          <h3 class="locked-title">Resultats pendents d'introducció</h3>
+          <p class="locked-desc">
+            Seguint el rigor del disseny experimental, els resultats definitius, les taules creuades, els coeficients estadístics i els gràfics 
+            <strong>es calculen automàticament</strong> un cop s'han introduït les <strong>40 puntuacions</strong> (2 blocs × 20 participants).
+          </p>
+          <div id="locked-missing-count" class="locked-pill">
+            Falten 20 participants per completar (40 puntuacions pendents).
+          </div>
+        </div>
+
+        <!-- ESTAT ACTIU (Quan s'han completat les 40 puntuacions) -->
+        <div id="results-active-wrapper" class="results-active-wrapper" style="display: none;">
+
+          <!-- SECCIÓ 1: PERCENTATGES GENERALS -->
+          <div class="card-section">
+            <div class="card-section-header">
+              <h3 class="card-section-title">1. Percentatges Generals</h3>
+              <span class="tag-badge">Denominador Fix = 20</span>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 14px;">
+              Proporció de puntuacions ALTA i BAIXA en cadascun dels dos blocs sobre el total de la mostra (N = 20):
+            </p>
+            <div id="general-percentages-container" class="general-stats-grid"></div>
+          </div>
+
+          <!-- SECCIÓ 2: TAULA CREUADA I PERCENTATGES CONDICIONALS -->
+          <div class="card-section">
+            <div class="card-section-header">
+              <h3 class="card-section-title">2. Taula Creuada 2×2 (Contingència)</h3>
+              <span class="tag-badge">% Condicionals per Fila</span>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 14px;">
+              Distribució conjunta de freqüències observades, esperades i percentatges condicionals calculats sobre el nombre de participants de cada fila:
+            </p>
+            <div id="contingency-table-container" class="contingency-table-wrapper"></div>
+          </div>
+
+          <!-- SECCIÓ 3: GRÀFICS VISUALS FÀCILS D'INTERPRETAR -->
+          <div class="card-section">
+            <div class="card-section-header">
+              <h3 class="card-section-title">3. Gràfics Visuals Fàcils d'Interpretar</h3>
+              <span class="tag-badge">Mostra: 20 Participants</span>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+              Representacions visuals directes per comparar les variables i comprendre la seva relació d'un sol cop d'ull:
+            </p>
+            <div id="easy-charts-container" class="easy-charts-container"></div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <div id="toast-msg" class="toast-msg"></div>
+
+  <!-- SCRIPT INTEGRAT 100% AUTÒNOM I GARANTIT SENSE DEPENDÈNCIES -->
+  <script>
+    // Constants
+    const TOTAL_PARTICIPANTS = 20;
+    const TOTAL_SCORES = 40;
+    const STORAGE_KEY = 'analisi_20_participants_data';
+    const STORAGE_NAMES_KEY = 'analisi_20_participants_block_names';
+
+    // Estat
+    let participants = [];
+    let blockNames = { bloc1: 'BLOC 1', bloc2: 'BLOC 2' };
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Inicialització
+    function loadSavedData() {
+      // Noms dels blocs
+      const savedNames = localStorage.getItem(STORAGE_NAMES_KEY);
+      if (savedNames) {
+        try {
+          const parsed = JSON.parse(savedNames);
+          if (parsed.bloc1) blockNames.bloc1 = parsed.bloc1;
+          if (parsed.bloc2) blockNames.bloc2 = parsed.bloc2;
+        } catch (e) {}
+      }
+      const in1 = document.getElementById('input-bloc1-name');
+      const in2 = document.getElementById('input-bloc2-name');
+      if (in1) in1.value = blockNames.bloc1;
+      if (in2) in2.value = blockNames.bloc2;
+      updateHeaderTitles();
+
+      // Participants
+      const savedParts = localStorage.getItem(STORAGE_KEY);
+      if (savedParts) {
+        try {
+          const parsed = JSON.parse(savedParts);
+          if (Array.isArray(parsed) && parsed.length === TOTAL_PARTICIPANTS) {
+            participants = parsed;
+            return;
+          }
+        } catch (e) {}
+      }
+
+      participants = Array.from({ length: TOTAL_PARTICIPANTS }, (_, i) => ({
+        id: i + 1,
+        bloc1: null,
+        bloc2: null
+      }));
+    }
+
+    function saveAll() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(participants));
+        localStorage.setItem(STORAGE_NAMES_KEY, JSON.stringify(blockNames));
+      } catch (e) {}
+    }
+
+    function updateHeaderTitles() {
+      const th1 = document.getElementById('th-bloc1-header');
+      const th2 = document.getElementById('th-bloc2-header');
+      if (th1) th1.textContent = blockNames.bloc1 || 'BLOC 1';
+      if (th2) th2.textContent = blockNames.bloc2 || 'BLOC 2';
+    }
+
+    function updateBlockNamesFromInput() {
+      const in1 = document.getElementById('input-bloc1-name');
+      const in2 = document.getElementById('input-bloc2-name');
+      blockNames.bloc1 = in1 && in1.value.trim() ? in1.value.trim() : 'BLOC 1';
+      blockNames.bloc2 = in2 && in2.value.trim() ? in2.value.trim() : 'BLOC 2';
+      saveAll();
+      updateHeaderTitles();
+      processAnalysis();
+    }
+
+    // Acció de prémer un botó ALTA o BAIXA (amb selecció garantida)
+    function setChoice(index, bloc, val) {
+      const p = participants[index];
+      if (!p) return;
+
+      if (bloc === 1) {
+        p.bloc1 = (p.bloc1 === val) ? null : val;
+      } else if (bloc === 2) {
+        p.bloc2 = (p.bloc2 === val) ? null : val;
+      }
+
+      saveAll();
+      renderTableUI();
+      updateStatusBar();
+      processAnalysis();
+    }
+
+    // Renderitzar les 20 files de la taula
+    function renderTableUI() {
+      const tbody = document.getElementById('participants-tbody');
+      if (!tbody) return;
+
+      let html = '';
+      participants.forEach((p, idx) => {
+        let dotClass = '';
+        if (p.bloc1 && p.bloc2) dotClass = 'complete';
+        else if (p.bloc1 || p.bloc2) dotClass = 'partial';
+
+        const b1Alta = p.bloc1 === 'ALTA' ? 'active-alta' : '';
+        const b1Baixa = p.bloc1 === 'BAIXA' ? 'active-baixa' : '';
+        const b2Alta = p.bloc2 === 'ALTA' ? 'active-alta' : '';
+        const b2Baixa = p.bloc2 === 'BAIXA' ? 'active-baixa' : '';
+
+        html += `
+          <tr>
+            <td class="participant-label">
+              <span class="row-status-dot ${dotClass}"></span>
+              <span>Participant ${p.id}</span>
+            </td>
+            <td>
+              <div class="toggle-group">
+                <button type="button" class="toggle-btn ${b1Alta}" onclick="setChoice(${idx}, 1, 'ALTA')">ALTA</button>
+                <button type="button" class="toggle-btn ${b1Baixa}" onclick="setChoice(${idx}, 1, 'BAIXA')">BAIXA</button>
+              </div>
+            </td>
+            <td>
+              <div class="toggle-group">
+                <button type="button" class="toggle-btn ${b2Alta}" onclick="setChoice(${idx}, 2, 'ALTA')">ALTA</button>
+                <button type="button" class="toggle-btn ${b2Baixa}" onclick="setChoice(${idx}, 2, 'BAIXA')">BAIXA</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    // Barra de progrés
+    function getStatsCount() {
+      let completed = 0;
+      let scores = 0;
+      participants.forEach(p => {
+        let c = 0;
+        if (p.bloc1) { scores++; c++; }
+        if (p.bloc2) { scores++; c++; }
+        if (c === 2) completed++;
+      });
+      return {
+        completed,
+        scores,
+        missingParts: TOTAL_PARTICIPANTS - completed,
+        missingScores: TOTAL_SCORES - scores,
+        isComplete: scores === TOTAL_SCORES && completed === TOTAL_PARTICIPANTS,
+        pct: Math.round((scores / TOTAL_SCORES) * 100)
+      };
+    }
+
+    function updateStatusBar() {
+      const s = getStatsCount();
+      const fill = document.getElementById('progress-fill');
+      if (fill) fill.style.width = s.pct + '%';
+
+      const compEl = document.getElementById('completed-participants-count');
+      if (compEl) compEl.textContent = s.completed;
+
+      const missPartEl = document.getElementById('missing-participants-count');
+      if (missPartEl) missPartEl.textContent = s.missingParts;
+
+      const missScEl = document.getElementById('missing-scores-count');
+      if (missScEl) missScEl.textContent = s.missingScores;
+
+      const pill = document.getElementById('status-summary-pill');
+      if (pill) {
+        if (s.isComplete) {
+          pill.className = 'count-pill success';
+          pill.textContent = '✓ 20 de 20 completats (40/40 puntuacions)';
+        } else {
+          pill.className = 'count-pill warning';
+          pill.textContent = `Falten ${s.missingParts} participants (${s.missingScores} puntuacions)`;
+        }
+      }
+    }
+
+    // Càlculs matemàtics i estadístics
+    function calculateAllStats() {
+      let a = 0, b = 0, c = 0, d = 0;
+      participants.forEach(p => {
+        if (p.bloc1 === 'ALTA' && p.bloc2 === 'ALTA') a++;
+        else if (p.bloc1 === 'ALTA' && p.bloc2 === 'BAIXA') b++;
+        else if (p.bloc1 === 'BAIXA' && p.bloc2 === 'ALTA') c++;
+        else if (p.bloc1 === 'BAIXA' && p.bloc2 === 'BAIXA') d++;
+      });
+
+      const N = 20;
+      const r1 = a + b;
+      const r2 = c + d;
+      const c1 = a + c;
+      const c2 = b + d;
+
+      const pctB1Alta = (r1 / N) * 100;
+      const pctB1Baixa = (r2 / N) * 100;
+      const pctB2Alta = (c1 / N) * 100;
+      const pctB2Baixa = (c2 / N) * 100;
+
+      const pctRow1Col1 = r1 > 0 ? (a / r1) * 100 : 0;
+      const pctRow1Col2 = r1 > 0 ? (b / r1) * 100 : 0;
+      const pctRow2Col1 = r2 > 0 ? (c / r2) * 100 : 0;
+      const pctRow2Col2 = r2 > 0 ? (d / r2) * 100 : 0;
+
+      const expA = (r1 * c1) / N;
+      const expB = (r1 * c2) / N;
+      const expC = (r2 * c1) / N;
+      const expD = (r2 * c2) / N;
+
+      const cellsUnder5 = [expA, expB, expC, expD].filter(v => v < 5).length;
+      const cochranMet = cellsUnder5 === 0;
+
+      // Chi2
+      let chi2 = 0;
+      if (r1 > 0 && r2 > 0 && c1 > 0 && c2 > 0) {
+        chi2 = ((a - expA) ** 2 / expA) + ((b - expB) ** 2 / expB) + ((c - expC) ** 2 / expC) + ((d - expD) ** 2 / expD);
+      }
+      const pChi = chi2PVal(chi2);
+
+      // Yates
+      let chi2Yates = 0;
+      const numYates = Math.max(0, Math.abs(a * d - b * c) - 10);
+      if (r1 > 0 && r2 > 0 && c1 > 0 && c2 > 0) {
+        chi2Yates = (20 * (numYates ** 2)) / (r1 * r2 * c1 * c2);
+      }
+      const pYates = chi2PVal(chi2Yates);
+
+      // Fisher
+      const pFisher = calcFisherExact(a, b, c, d);
+
+      // Phi
+      let phi = 0;
+      const denomPhi = Math.sqrt(r1 * r2 * c1 * c2);
+      if (denomPhi > 0) phi = (a * d - b * c) / denomPhi;
+      const cramersV = Math.abs(phi);
+
+      // OR
+      let or = null;
+      if (b > 0 && c > 0) or = (a * d) / (b * c);
+      else or = ((a + 0.5) * (d + 0.5)) / ((b + 0.5) * (c + 0.5));
+
+      const aM = a === 0 ? 0.5 : a, bM = b === 0 ? 0.5 : b, cM = c === 0 ? 0.5 : c, dM = d === 0 ? 0.5 : d;
+      const seLnOR = Math.sqrt((1 / aM) + (1 / bM) + (1 / cM) + (1 / dM));
+      const lnOR = Math.log(or);
+      const orLow = Math.exp(lnOR - 1.96 * seLnOR);
+      const orHigh = Math.exp(lnOR + 1.96 * seLnOR);
+
+      return {
+        a, b, c, d, r1, r2, c1, c2,
+        pctB1Alta, pctB1Baixa, pctB2Alta, pctB2Baixa,
+        pctRow1Col1, pctRow1Col2, pctRow2Col1, pctRow2Col2,
+        expA, expB, expC, expD, cellsUnder5, cochranMet,
+        chi2, pChi, chi2Yates, pYates, pFisher,
+        phi, cramersV, or, orLow, orHigh
+      };
+    }
+
+    function chi2PVal(x) {
+      if (x <= 0) return 1.0;
+      return erfcMath(Math.sqrt(x / 2));
+    }
+
+    function erfcMath(x) {
+      if (x < 0) return 2 - erfcMath(-x);
+      const t = 1.0 / (1.0 + 0.5 * x);
+      return t * Math.exp(-x * x - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+    }
+
+    function nCr(n, r) {
+      if (r < 0 || r > n) return 0;
+      if (r === 0 || r === n) return 1;
+      if (r > n / 2) r = n - r;
+      let res = 1;
+      for (let i = 1; i <= r; i++) res = (res * (n - i + 1)) / i;
+      return res;
+    }
+
+    function calcFisherExact(a, b, c, d) {
+      const r1 = a + b, r2 = c + d, c1 = a + c, c2 = b + d, n = 20;
+      if (r1 === 0 || r2 === 0 || c1 === 0 || c2 === 0) return 1.0;
+      const denom = nCr(n, c1);
+      const getP = (x) => {
+        if (x < 0 || x > r1 || (c1 - x) < 0 || (c1 - x) > r2) return 0;
+        return (nCr(r1, x) * nCr(r2, c1 - x)) / denom;
+      };
+      const pObs = getP(a);
+      let p2 = 0;
+      const minX = Math.max(0, c1 - r2);
+      const maxX = Math.min(r1, c1);
+      for (let x = minX; x <= maxX; x++) {
+        const px = getP(x);
+        if (px <= pObs + 1e-11) p2 += px;
+      }
+      return Math.min(1.0, Number(p2.toFixed(6)));
+    }
+
+    // Processar i dibuixar tot l'informe
+    function processAnalysis() {
+      const s = getStatsCount();
+      const lockedCard = document.getElementById('locked-results-card');
+      const activeSection = document.getElementById('results-active-wrapper');
+
+      if (!s.isComplete) {
+        if (lockedCard) lockedCard.style.display = 'block';
+        if (activeSection) activeSection.style.display = 'none';
+        const lockText = document.getElementById('locked-missing-count');
+        if (lockText) {
+          lockText.textContent = `Falten ${s.missingParts} participants per completar (${s.missingScores} puntuacions pendents).`;
+        }
+        return;
+      }
+
+      if (lockedCard) lockedCard.style.display = 'none';
+      if (activeSection) activeSection.style.display = 'flex';
+
+      const st = calculateAllStats();
+      const n1 = escapeHtml(blockNames.bloc1 || 'BLOC 1');
+      const n2 = escapeHtml(blockNames.bloc2 || 'BLOC 2');
+
+      // 1. Percentatges generals
+      const genEl = document.getElementById('general-percentages-container');
+      if (genEl) {
+        genEl.innerHTML = `
+          <div class="stat-block-box">
+            <div class="stat-block-title"><span>${n1}</span><span style="color:#64748b; font-size:0.8rem;">Denominador: 20</span></div>
+            <div class="stat-row-item">
+              <div><span class="pill-alta">ALTA</span> Freqüència:</div>
+              <div><strong>${st.r1} / 20</strong><span class="stat-percentage-badge" style="color:var(--alta-color);">${st.pctB1Alta.toFixed(1)}%</span></div>
+            </div>
+            <div class="stat-row-item">
+              <div><span class="pill-baixa">BAIXA</span> Freqüència:</div>
+              <div><strong>${st.r2} / 20</strong><span class="stat-percentage-badge" style="color:var(--baixa-color);">${st.pctB1Baixa.toFixed(1)}%</span></div>
+            </div>
+          </div>
+          <div class="stat-block-box">
+            <div class="stat-block-title"><span>${n2}</span><span style="color:#64748b; font-size:0.8rem;">Denominador: 20</span></div>
+            <div class="stat-row-item">
+              <div><span class="pill-alta">ALTA</span> Freqüència:</div>
+              <div><strong>${st.c1} / 20</strong><span class="stat-percentage-badge" style="color:var(--alta-color);">${st.pctB2Alta.toFixed(1)}%</span></div>
+            </div>
+            <div class="stat-row-item">
+              <div><span class="pill-baixa">BAIXA</span> Freqüència:</div>
+              <div><strong>${st.c2} / 20</strong><span class="stat-percentage-badge" style="color:var(--baixa-color);">${st.pctB2Baixa.toFixed(1)}%</span></div>
+            </div>
+          </div>
+        `;
+      }
+
+      // 2. Taula creuada
+      const tabEl = document.getElementById('contingency-table-container');
+      if (tabEl) {
+        tabEl.innerHTML = `
+          <table class="contingency-table">
+            <thead>
+              <tr>
+                <th rowspan="2" class="corner-header">${n1} \\ ${n2}</th>
+                <th colspan="2">${n2}</th>
+                <th rowspan="2">Total Fila (${n1})</th>
+              </tr>
+              <tr>
+                <th>ALTA</th>
+                <th>BAIXA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="row-header"><strong>${n1}: ALTA</strong></td>
+                <td>
+                  <div class="cell-obs">${st.a}</div>
+                  <div class="cell-row-pct">${st.pctRow1Col1.toFixed(1)}% de la fila</div>
+                  <div class="cell-total-pct">(${(st.a/20*100).toFixed(1)}% del total)</div>
+                  <div class="cell-exp">Esperat: ${st.expA.toFixed(1)}</div>
+                </td>
+                <td>
+                  <div class="cell-obs">${st.b}</div>
+                  <div class="cell-row-pct">${st.pctRow1Col2.toFixed(1)}% de la fila</div>
+                  <div class="cell-total-pct">(${(st.b/20*100).toFixed(1)}% del total)</div>
+                  <div class="cell-exp">Esperat: ${st.expB.toFixed(1)}</div>
+                </td>
+                <td class="total-cell">
+                  <div class="cell-obs">${st.r1}</div>
+                  <div class="cell-row-pct">100.0%</div>
+                  <div class="cell-total-pct">(${st.pctB1Alta.toFixed(1)}% total)</div>
+                </td>
+              </tr>
+              <tr>
+                <td class="row-header"><strong>${n1}: BAIXA</strong></td>
+                <td>
+                  <div class="cell-obs">${st.c}</div>
+                  <div class="cell-row-pct">${st.pctRow2Col1.toFixed(1)}% de la fila</div>
+                  <div class="cell-total-pct">(${(st.c/20*100).toFixed(1)}% del total)</div>
+                  <div class="cell-exp">Esperat: ${st.expC.toFixed(1)}</div>
+                </td>
+                <td>
+                  <div class="cell-obs">${st.d}</div>
+                  <div class="cell-row-pct">${st.pctRow2Col2.toFixed(1)}% de la fila</div>
+                  <div class="cell-total-pct">(${(st.d/20*100).toFixed(1)}% del total)</div>
+                  <div class="cell-exp">Esperat: ${st.expD.toFixed(1)}</div>
+                </td>
+                <td class="total-cell">
+                  <div class="cell-obs">${st.r2}</div>
+                  <div class="cell-row-pct">100.0%</div>
+                  <div class="cell-total-pct">(${st.pctB1Baixa.toFixed(1)}% total)</div>
+                </td>
+              </tr>
+              <tr>
+                <td class="total-cell"><strong>Total Columna (${n2})</strong></td>
+                <td class="total-cell"><div class="cell-obs">${st.c1}</div><div class="cell-total-pct">${st.pctB2Alta.toFixed(1)}% total</div></td>
+                <td class="total-cell"><div class="cell-obs">${st.c2}</div><div class="cell-total-pct">${st.pctB2Baixa.toFixed(1)}% total</div></td>
+                <td class="total-cell" style="background:#e2e8f0;"><div class="cell-obs" style="color:var(--primary);">20</div><div class="cell-total-pct">100.0%</div></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="contingency-note">
+            <strong>Nota:</strong> Els percentatges en blau indiquen la proporció condicional sobre el total de participants de cada fila (${n1}).
+          </div>
+        `;
+      }
+
+      // 3. Gràfics Visuals Fàcils d'Interpretar
+      renderEasyCharts(st, n1, n2);
+    }
+
+    // Funció per renderitzar els gràfics intuïtius
+    function renderEasyCharts(st, n1, n2) {
+      const container = document.getElementById('easy-charts-container');
+      if (!container) return;
+
+      // Generar el mosaic visual dels 20 participants
+      let mosaicHtml = '';
+      participants.forEach(p => {
+        let bg = '#cbd5e1';
+        let b1 = p.bloc1 || '-';
+        let b2 = p.bloc2 || '-';
+
+        if (p.bloc1 === 'ALTA' && p.bloc2 === 'ALTA') bg = '#1d4ed8'; // Blau fosc
+        else if (p.bloc1 === 'ALTA' && p.bloc2 === 'BAIXA') bg = '#0284c7'; // Blau cel
+        else if (p.bloc1 === 'BAIXA' && p.bloc2 === 'ALTA') bg = '#ea580c'; // Taronja
+        else if (p.bloc1 === 'BAIXA' && p.bloc2 === 'BAIXA') bg = '#d97706'; // Ambre
+
+        mosaicHtml += `<div class="mosaic-node" style="background:${bg};" title="Participant ${p.id}: ${n1} ${b1} / ${n2} ${b2}">P${p.id}</div>`;
+      });
+
+      container.innerHTML = `
+        <!-- Gràfic 1: Proporció ALTA vs BAIXA a cada variable -->
+        <div class="easy-chart-card">
+          <div class="easy-chart-title">📊 1. Proporció ALTA vs BAIXA a cada variable (Total = 20)</div>
+          <div class="easy-chart-subtitle">Compareu fàcilment com es reparteixen els 20 participants a cada bloc:</div>
+
+          <div class="segmented-bar-block">
+            <div class="segmented-bar-header">
+              <span>Variable 1: <strong>${n1}</strong></span>
+              <span style="font-size:0.8rem; color:#64748b;">${st.r1} ALTA (${st.pctB1Alta.toFixed(0)}%) · ${st.r2} BAIXA (${st.pctB1Baixa.toFixed(0)}%)</span>
+            </div>
+            <div class="segmented-bar-track">
+              <div class="seg-alta" style="width: ${st.pctB1Alta}%;" title="${st.r1} de 20">
+                ${st.pctB1Alta >= 15 ? `ALTA: ${st.r1} (${st.pctB1Alta.toFixed(0)}%)` : (st.pctB1Alta > 0 ? `${st.r1}` : '')}
+              </div>
+              <div class="seg-baixa" style="width: ${st.pctB1Baixa}%;" title="${st.r2} de 20">
+                ${st.pctB1Baixa >= 15 ? `BAIXA: ${st.r2} (${st.pctB1Baixa.toFixed(0)}%)` : (st.pctB1Baixa > 0 ? `${st.r2}` : '')}
+              </div>
+            </div>
+          </div>
+
+          <div class="segmented-bar-block" style="margin-top: 14px;">
+            <div class="segmented-bar-header">
+              <span>Variable 2: <strong>${n2}</strong></span>
+              <span style="font-size:0.8rem; color:#64748b;">${st.c1} ALTA (${st.pctB2Alta.toFixed(0)}%) · ${st.c2} BAIXA (${st.pctB2Baixa.toFixed(0)}%)</span>
+            </div>
+            <div class="segmented-bar-track">
+              <div class="seg-alta" style="width: ${st.pctB2Alta}%;" title="${st.c1} de 20">
+                ${st.pctB2Alta >= 15 ? `ALTA: ${st.c1} (${st.pctB2Alta.toFixed(0)}%)` : (st.pctB2Alta > 0 ? `${st.c1}` : '')}
+              </div>
+              <div class="seg-baixa" style="width: ${st.pctB2Baixa}%;" title="${st.c2} de 20">
+                ${st.pctB2Baixa >= 15 ? `BAIXA: ${st.c2} (${st.pctB2Baixa.toFixed(0)}%)` : (st.pctB2Baixa > 0 ? `${st.c2}` : '')}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gràfic 2: Comparativa de subgrups -->
+        <div class="easy-chart-card">
+          <div class="easy-chart-title">🔍 2. Relació directa: Com varia «${n2}» segons el nivell de «${n1}»?</div>
+          <div class="easy-chart-subtitle">Compareu directament les dues barres: observeu si canvia la proporció blava entre els dos grups.</div>
+
+          <div class="two-groups-grid">
+            <div class="group-card">
+              <div class="group-card-header">
+                <span style="color:#2563eb;">Subgrup 1: Quan ${n1} és ALTA</span>
+                <span style="color:#64748b;">${st.r1} alumnes</span>
+              </div>
+              <div style="font-size:0.8rem; margin-bottom:8px; color:#475569;">
+                Com tenen la variable <strong>${n2}</strong>:
+              </div>
+              <div class="segmented-bar-track" style="height: 28px;">
+                <div class="seg-alta" style="width: ${st.pctRow1Col1}%;">
+                  ${st.pctRow1Col1 >= 20 ? `${st.a} ALTA (${st.pctRow1Col1.toFixed(0)}%)` : (st.pctRow1Col1 > 0 ? `${st.a}` : '')}
+                </div>
+                <div class="seg-baixa" style="width: ${st.pctRow1Col2}%;">
+                  ${st.pctRow1Col2 >= 20 ? `${st.b} BAIXA (${st.pctRow1Col2.toFixed(0)}%)` : (st.pctRow1Col2 > 0 ? `${st.b}` : '')}
+                </div>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:700; margin-top:6px;">
+                <span style="color:#2563eb;">🟦 ALTA: ${st.a} de ${st.r1} (${st.pctRow1Col1.toFixed(1)}%)</span>
+                <span style="color:#d97706;">🟧 BAIXA: ${st.b} de ${st.r1} (${st.pctRow1Col2.toFixed(1)}%)</span>
+              </div>
+            </div>
+
+            <div class="group-card">
+              <div class="group-card-header">
+                <span style="color:#d97706;">Subgrup 2: Quan ${n1} és BAIXA</span>
+                <span style="color:#64748b;">${st.r2} alumnes</span>
+              </div>
+              <div style="font-size:0.8rem; margin-bottom:8px; color:#475569;">
+                Com tenen la variable <strong>${n2}</strong>:
+              </div>
+              <div class="segmented-bar-track" style="height: 28px;">
+                <div class="seg-alta" style="width: ${st.pctRow2Col1}%;">
+                  ${st.pctRow2Col1 >= 20 ? `${st.c} ALTA (${st.pctRow2Col1.toFixed(0)}%)` : (st.pctRow2Col1 > 0 ? `${st.c}` : '')}
+                </div>
+                <div class="seg-baixa" style="width: ${st.pctRow2Col2}%;">
+                  ${st.pctRow2Col2 >= 20 ? `${st.d} BAIXA (${st.pctRow2Col2.toFixed(0)}%)` : (st.pctRow2Col2 > 0 ? `${st.d}` : '')}
+                </div>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:700; margin-top:6px;">
+                <span style="color:#2563eb;">🟦 ALTA: ${st.c} de ${st.r2} (${st.pctRow2Col1.toFixed(1)}%)</span>
+                <span style="color:#d97706;">🟧 BAIXA: ${st.d} de ${st.r2} (${st.pctRow2Col2.toFixed(1)}%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gràfic 3: Els 4 perfils combinats dels 20 participants -->
+        <div class="easy-chart-card">
+          <div class="easy-chart-title">👥 3. Distribució dels 20 participants en 4 perfils combinats</div>
+          <div class="easy-chart-subtitle">Cada casella amb P1...P20 representa un participant individual de la vostra mostra:</div>
+
+          <div class="profiles-grid">
+            <div class="profile-card" style="border-top: 4px solid #1d4ed8;">
+              <div class="profile-card-count" style="color:#1d4ed8;">${st.a} <span style="font-size:0.85rem; font-weight:600; color:#64748b;">/ 20</span></div>
+              <div class="profile-card-label">${(st.a / 20 * 100).toFixed(0)}% del total</div>
+              <div style="font-size:0.75rem; font-weight:800; color:#1d4ed8; margin-top:2px;">Tots dos ALTS</div>
+            </div>
+            <div class="profile-card" style="border-top: 4px solid #0284c7;">
+              <div class="profile-card-count" style="color:#0284c7;">${st.b} <span style="font-size:0.85rem; font-weight:600; color:#64748b;">/ 20</span></div>
+              <div class="profile-card-label">${(st.b / 20 * 100).toFixed(0)}% del total</div>
+              <div style="font-size:0.75rem; font-weight:800; color:#0284c7; margin-top:2px;">${n1} ALT + ${n2} BAIX</div>
+            </div>
+            <div class="profile-card" style="border-top: 4px solid #ea580c;">
+              <div class="profile-card-count" style="color:#ea580c;">${st.c} <span style="font-size:0.85rem; font-weight:600; color:#64748b;">/ 20</span></div>
+              <div class="profile-card-label">${(st.c / 20 * 100).toFixed(0)}% del total</div>
+              <div style="font-size:0.75rem; font-weight:800; color:#ea580c; margin-top:2px;">${n1} BAIX + ${n2} ALT</div>
+            </div>
+            <div class="profile-card" style="border-top: 4px solid #d97706;">
+              <div class="profile-card-count" style="color:#d97706;">${st.d} <span style="font-size:0.85rem; font-weight:600; color:#64748b;">/ 20</span></div>
+              <div class="profile-card-label">${(st.d / 20 * 100).toFixed(0)}% del total</div>
+              <div style="font-size:0.75rem; font-weight:800; color:#d97706; margin-top:2px;">Tots dos BAIXOS</div>
+            </div>
+          </div>
+
+          <div class="mosaic-participants-grid">
+            ${mosaicHtml}
+          </div>
+
+          <div class="mosaic-legend">
+            <div class="legend-item"><div class="legend-box" style="background:#1d4ed8;"></div> Tots dos ALTS (${st.a})</div>
+            <div class="legend-item"><div class="legend-box" style="background:#0284c7;"></div> ${n1} ALT / ${n2} BAIX (${st.b})</div>
+            <div class="legend-item"><div class="legend-box" style="background:#ea580c;"></div> ${n1} BAIX / ${n2} ALT (${st.c})</div>
+            <div class="legend-item"><div class="legend-box" style="background:#d97706;"></div> Tots dos BAIXOS (${st.d})</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Exportació a Excel (XML / CSV natiu universal)
+    function exportToExcel() {
+      const s = getStatsCount();
+      if (!s.isComplete) {
+        alert('Cal introduir les 40 puntuacions dels 20 participants abans d\'exportar.');
+        return;
+      }
+      const st = calculateAllStats();
+      const n1 = blockNames.bloc1 || 'BLOC 1';
+      const n2 = blockNames.bloc2 || 'BLOC 2';
+
+      let csv = '\uFEFF';
+      csv += `Participant,${n1},${n2}\r\n`;
+      participants.forEach(p => {
+        csv += `Participant ${p.id},${p.bloc1},${p.bloc2}\r\n`;
+      });
+      csv += '\r\nTAULA DE CONTINGENCIA 2x2\r\n';
+      csv += `${n1} \\ ${n2},${n2}: ALTA,${n2}: BAIXA,TOTAL FILA\r\n`;
+      csv += `${n1}: ALTA,${st.a} (${st.pctRow1Col1.toFixed(1)}%),${st.b} (${st.pctRow1Col2.toFixed(1)}%),${st.r1}\r\n`;
+      csv += `${n1}: BAIXA,${st.c} (${st.pctRow2Col1.toFixed(1)}%),${st.d} (${st.pctRow2Col2.toFixed(1)}%),${st.r2}\r\n`;
+      csv += `TOTAL COLUMNA,${st.c1},${st.c2},20\r\n\r\n`;
+      csv += 'ESTADISTICS\r\n';
+      csv += `Coeficient Phi,${st.phi.toFixed(4)}\r\n`;
+      csv += `V de Cramer,${st.cramersV.toFixed(4)}\r\n`;
+      csv += `Prova Exacta de Fisher (p-valor),${st.pFisher.toFixed(4)}\r\n`;
+      csv += `Khi-quadrat de Pearson,${st.chi2.toFixed(4)}\r\n`;
+      csv += `Odds Ratio,${st.or.toFixed(4)}\r\n`;
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Analisi_Estadistica_20_Participants.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('Arxiu descarregat correctament!');
+    }
+
+    // Carregar dades d'exemple
+    function loadSampleData(type) {
+      if (type === 'alta_associacio') {
+        participants.forEach((p, i) => {
+          if (i < 10) {
+            p.bloc1 = 'ALTA';
+            p.bloc2 = (i < 8) ? 'ALTA' : 'BAIXA';
+          } else {
+            p.bloc1 = 'BAIXA';
+            p.bloc2 = (i < 18) ? 'BAIXA' : 'ALTA';
+          }
+        });
+        showToast('Exemple d\'alta associació carregat!');
+      } else {
+        participants.forEach((p, i) => {
+          p.bloc1 = (i % 2 === 0) ? 'ALTA' : 'BAIXA';
+          p.bloc2 = (Math.floor(i / 2) % 2 === 0) ? 'ALTA' : 'BAIXA';
+        });
+        showToast('Exemple d\'independència carregat!');
+      }
+      saveAll();
+      renderTableUI();
+      updateStatusBar();
+      processAnalysis();
+    }
+
+    // Reiniciar
+    function resetAllData() {
+      if (confirm('Voleu reiniciar les respostes dels 20 participants?')) {
+        participants.forEach(p => { p.bloc1 = null; p.bloc2 = null; });
+        saveAll();
+        renderTableUI();
+        updateStatusBar();
+        processAnalysis();
+        showToast('Dades reiniciades.');
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast-msg');
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // Inicialització en carregar la pàgina
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedData();
+      renderTableUI();
+      updateStatusBar();
+      processAnalysis();
+    });
+
+    // Per si el DOM ja estava carregat
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      loadSavedData();
+      renderTableUI();
+      updateStatusBar();
+      processAnalysis();
+    }
+  </script>
+
+</body>
+</html>
